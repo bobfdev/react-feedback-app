@@ -3,7 +3,8 @@ import Card from './shared/Card';
 import Button from './shared/Button';
 import RatingSelect from './RatingSelect';
 
-function FeedbackForm() {
+// handleAdd prop passed in from App.js
+function FeedbackForm({ handleAdd }) {
     const [text, setText] = useState('')
     const [rating, setRating] = useState(10)
     const [btnDisabled, setBtnDisabled] = useState(true)
@@ -27,9 +28,27 @@ function FeedbackForm() {
         setText(e.target.value);
     }
 
+    const handleSubmit = (e) => {
+        // form submit calls preventDefault to prevent the default behavior from submitting to the actual file
+        e.preventDefault();
+        // new feedback object is constructed if message text length is greater than 10 characters
+        if(text.trim().length > 10) {
+            const newFeedback = {
+            // setting an object with "text" and "rating" as the values from the state
+                text,
+                rating
+            }
+
+            handleAdd(newFeedback)
+            
+            // clear text field after feedback submission
+            setText('')
+        }
+    }
+
     return (
         <Card>
-            <form>
+            <form onSubmit={handleSubmit}>
                 <h2>How would you rate your service?</h2>
                 <RatingSelect select={(rating) => setRating(rating)} />
                 <div className="input-group">
