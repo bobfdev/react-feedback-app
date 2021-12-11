@@ -1,14 +1,27 @@
-import { useState } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import Card from './shared/Card';
 import Button from './shared/Button';
 import RatingSelect from './RatingSelect';
+import FeedbackContext from '../context/FeedbackContext';
 
 // handleAdd prop passed in from App.js
-function FeedbackForm({ handleAdd }) {
+function FeedbackForm() {
     const [text, setText] = useState('')
     const [rating, setRating] = useState(10)
     const [btnDisabled, setBtnDisabled] = useState(true)
     const [message, setMessage] = useState('')
+
+    const { addFeedback, feedbackEdit, updateFeedback } = useContext(FeedbackContext)
+
+    // takes in a second argument (feedbackEdit), an array of dependencies
+    useEffect(() => {
+        // edit is a value
+        if(feedbackEdit.edit === true) {
+            setBtnDisabled(false)
+            setText(feedbackEdit.item.text)
+            setRating(feedbackEdit.item.rating)
+        }
+    }, [feedbackEdit])
 
     const handleTextChange = (e) => {
         // if no text in form then disable send button
@@ -36,10 +49,14 @@ function FeedbackForm({ handleAdd }) {
             const newFeedback = {
             // setting an object with "text" and "rating" as the values from the state
                 text,
-                rating
+                rating,
             }
 
-            handleAdd(newFeedback)
+            if(feedbackEdit.edit === true) {
+                updateFeedback(feedbackEdit.item.id, newFeedback)
+            } else {
+                addFeedback(newFeedback)
+            }
             
             // clear text field after feedback submission
             setText('')

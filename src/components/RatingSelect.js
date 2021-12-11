@@ -1,8 +1,16 @@
-import { useState } from 'react';
+import { useState, useContext, useEffect } from 'react';
+import FeedbackContext from '../context/FeedbackContext';
 
 // "select" prop passed in from FeedbackForm 
 function RatingSelect({ select }) {
     const [selected, setSelected] = useState(10)
+
+    const { feedbackEdit } = useContext(FeedbackContext)
+
+    // takes in a second argument (feedbackEdit), an array of dependencies
+    useEffect(() => {
+      setSelected(feedbackEdit.item.rating)
+    }, [feedbackEdit])
 
     const handleChange = (e) => {
         // "+" turns the value into a numerical value
